@@ -1,4 +1,4 @@
-namespace TelegramSpyBot.Data.Data;
+namespace TelegramSpyBot.Data.Context;
 
 public class AppDbContext : DbContext
 {
