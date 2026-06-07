@@ -7,12 +7,13 @@ public class Character : BaseEntity
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(100)]
-    public string Universe { get; set; } = string.Empty;
+    public int UniverseId { get; set; }
 
     [MaxLength(500)]
     public string? Description { get; set; }
 
     [MaxLength(500)]
     public string? ImageUrl { get; set; }
+
+    public Universe Universe { get; set; } = null!;
 }
