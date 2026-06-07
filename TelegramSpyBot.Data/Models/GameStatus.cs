@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace TelegramSpyBot.Data.Models;
 
-namespace TelegramSpyBot.Data.Models
+public enum GameStatus
 {
-    internal class GameStatus
-    {
-    }
+    Waiting,
+    Active,
+    Finished
 }
