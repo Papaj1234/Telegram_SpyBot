@@ -1,51 +1,43 @@
 using Telegram.Bot.Polling;
+using TelegramSpyBot.App.Bot.Handlers.Interfaces;
 
 namespace TelegramSpyBot.App.Bot;
 
 public class UpdateHandler : IUpdateHandler
 {
+    private readonly ICommandHandler commandHandler;
+    private readonly ICallbackHandler callbackHandler;
+
+    public UpdateHandler(
+        ICommandHandler commandHandler,
+        ICallbackHandler callbackHandler)
+    {
+        this.commandHandler = commandHandler;
+        this.callbackHandler = callbackHandler;
+    }
+
     public async Task HandleUpdateAsync(
-        ITelegramBotClient botClient,
+        ITelegramBotClient client,
         Update update,
         CancellationToken cancellationToken)
     {
-        if (update.Message is not { } message)
+        var task = update switch
         {
-            return;
-        }
+            { Message: { } message } => commandHandler.HandleAsync(message, cancellationToken),
+            { CallbackQuery: { } callback } => callbackHandler.HandleAsync(callback, cancellationToken),
+            _ => Task.CompletedTask
+        };
 
-        if (message.Text is not { } text)
-        {
-            return;
-        }    
-
-        var command = text.Split(' ')[0].ToLowerInvariant();
-
-        switch (command)
-        {
-            case "/start":
-                await botClient.SendMessage(
-                    chatId: message.Chat.Id,
-                    text: "Привет! Я Михаил Исаеви",
-                    cancellationToken: cancellationToken);
-                break;
-
-            case "/ping":
-                await botClient.SendMessage(
-                    chatId: message.Chat.Id,
-                    text: "pong",
-                    cancellationToken: cancellationToken);
-                break;
-        }
+        await task;
     }
 
     public Task HandleErrorAsync(
-        ITelegramBotClient botClient,
+        ITelegramBotClient client,
         Exception exception,
         HandleErrorSource source,
         CancellationToken cancellationToken)
     {
-        Console.WriteLine($"Ошибка: {exception.Message}");
+        Console.WriteLine($"Error: {exception.Message}");
         return Task.CompletedTask;
     }
 }
