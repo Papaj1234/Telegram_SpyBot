@@ -1,6 +1,8 @@
+using TelegramSpyBot.App.Common.Interfaces;
+
 namespace TelegramSpyBot.App.Lobbies.Models;
 
-public class Lobby
+public class Lobby : IExpirable
 {
     private readonly List<LobbyPlayer> players = new();
 
@@ -10,9 +12,13 @@ public class Lobby
     public string UniverseName { get; init; } = string.Empty;
     public long CreatorId { get; init; }
 
+    public long Key => ChatId;
+    public CancellationTokenSource TimeoutCts => TimerCts;
+
     public int MessageId { get; set; }
     public LobbyState State { get; set; } = LobbyState.WaitingForPlayers;
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+    public int LifetimeSeconds { get; init; }
 
     public CancellationTokenSource TimerCts { get; } = new();
 

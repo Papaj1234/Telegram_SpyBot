@@ -7,16 +7,13 @@ namespace TelegramSpyBot.App.Lobbies;
 public class LobbyManager : ILobbyManager
 {
     private readonly ILobbyStore store;
-    private readonly ILobbyTimeoutScheduler scheduler;
     private readonly LobbyOptions options;
 
     public LobbyManager(
         ILobbyStore store,
-        ILobbyTimeoutScheduler scheduler,
         IOptions<LobbyOptions> options)
     {
         this.store = store;
-        this.scheduler = scheduler;
         this.options = options.Value;
     }
 
@@ -43,15 +40,14 @@ public class LobbyManager : ILobbyManager
             CreatorId = creatorId,
             TargetSize = size,
             UniverseId = universeId,
-            UniverseName = universeName
+            UniverseName = universeName,
+            LifetimeSeconds = options.LifetimeSeconds
         };
 
         if (!store.TryAdd(lobby))
         {
             return new LobbyCreateResult(LobbyCreateStatus.AlreadyExists, null);
         }
-
-        scheduler.Schedule(lobby);
 
         return new LobbyCreateResult(LobbyCreateStatus.Created, lobby);
     }
@@ -80,7 +76,7 @@ public class LobbyManager : ILobbyManager
         if (lobby.IsFull)
         {
             lobby.State = LobbyState.Starting;
-            scheduler.Cancel(lobby);
+            store.Cancel(lobby);
             return new LobbyJoinResult(LobbyJoinStatus.NowFull, lobby);
         }
 
@@ -96,7 +92,6 @@ public class LobbyManager : ILobbyManager
             return false;
         }
 
-        scheduler.Cancel(lobby);
         return store.Remove(chatId);
     }
 }
