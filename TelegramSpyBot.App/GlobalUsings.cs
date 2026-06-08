@@ -1,0 +1,9 @@
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
+global using Telegram.Bot;
+global using Telegram.Bot.Types;
+global using Telegram.Bot.Types.Enums;
+global using TelegramSpyBot.App.Lobbies.Models;
+global using TelegramSpyBot.App.Lobbies.Results;
+global using TelegramSpyBot.App.Lobbies.Interfaces;
